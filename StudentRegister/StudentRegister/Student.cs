@@ -10,19 +10,42 @@ namespace StudentRegister
     /// <summary>
     /// A class representing a student
     /// </summary>
-    public class Student
+    public class Student : INotifyPropertyChanged
     {
         private List<CourseResult> courseHistory;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyOfPropertyChanged(string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         /// <summary>
         /// Gets and sets the first name
         /// </summary>
-        public string First { get; set; }
-
+        public string First {
+            get { return first; }
+            set
+            {
+                first = value;
+                NotifyOfPropertyChanged("First");
+            }
+        } 
         /// <summary>
         /// Gets and sets the last name
         /// </summary>
-        public string Last { get; set; }
+        public string Last
+        {
+            get { return last; }
+            set
+            {   if(last != value)
+                last = value;
+                NotifyOfPropertyChanged("Last");
+            }
+        }
+
+
 
         /// <summary>
         /// Gets the course history
@@ -35,6 +58,8 @@ namespace StudentRegister
             }
         }
 
+        private string last;
+        private string first;
         /// <summary>
         /// Gets the student's GPA
         /// </summary>
@@ -84,6 +109,16 @@ namespace StudentRegister
             First = first;
             Last = last;
             courseHistory = new List<CourseResult>();
+        }
+        public override string ToString()
+        {
+            return $"{Last}, {First} ({GPA})";
+        }
+        public void CourseComplete(string name, uint hours, Grade grade, String semester)
+        {
+            courseHistory.Add(new CourseResult(name, hours, grade, semester));
+            NotifyOfPropertyChanged("GPA");
+            NotifyOfPropertyChanged("CourseHistory");
         }
 
     }
